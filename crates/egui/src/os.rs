@@ -30,7 +30,7 @@ impl Default for OperatingSystem {
 impl OperatingSystem {
     /// Uses the compile-time `target_arch` to identify the OS.
     pub const fn from_target_os() -> Self {
-        if cfg!(target_arch = "wasm32") {
+        if cfg!(target_family = "wasm") {
             Self::Unknown
         } else if cfg!(target_os = "android") {
             Self::Android

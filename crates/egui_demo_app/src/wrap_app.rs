@@ -3,7 +3,7 @@ use egui_demo_lib::is_mobile;
 #[cfg(feature = "glow")]
 use eframe::glow;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 use core::any::Any;
 
 #[derive(Default)]
@@ -98,7 +98,7 @@ enum Anchor {
 }
 
 impl Anchor {
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(target_family = "wasm")]
     fn all() -> Vec<Self> {
         vec![
             Self::Demo,
@@ -262,7 +262,7 @@ impl eframe::App for WrapApp {
     }
 
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(target_family = "wasm")]
         if let Some(anchor) = frame.info().web_info.location.hash.strip_prefix('#') {
             let anchor = Anchor::all().into_iter().find(|x| x.to_string() == anchor);
             if let Some(v) = anchor {
@@ -270,7 +270,7 @@ impl eframe::App for WrapApp {
             }
         }
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         if ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::F11)) {
             let fullscreen = ctx.input(|i| i.viewport().fullscreen.unwrap_or(false));
             ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(!fullscreen));
@@ -306,7 +306,7 @@ impl eframe::App for WrapApp {
         }
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(target_family = "wasm")]
     fn as_any_mut(&mut self) -> Option<&mut dyn Any> {
         Some(&mut *self)
     }

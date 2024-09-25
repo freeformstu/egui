@@ -96,7 +96,7 @@ impl RotatingTriangle {
     fn new(gl: &glow::Context) -> Self {
         use glow::HasContext as _;
 
-        let shader_version = if cfg!(target_arch = "wasm32") {
+        let shader_version = if cfg!(target_family = "wasm") {
             "#version 300 es"
         } else {
             "#version 330"

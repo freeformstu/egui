@@ -63,7 +63,7 @@ pub struct RenderState {
     ///
     /// This is not available on web.
     /// On web, we always select WebGPU is available, then fall back to WebGL if not.
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     pub available_adapters: Arc<[wgpu::Adapter]>,
 
     /// Wgpu device used for rendering, created from the adapter.
@@ -94,7 +94,7 @@ impl RenderState {
         crate::profile_scope!("RenderState::create"); // async yield give bad names using `profile_function`
 
         // This is always an empty list on web.
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         let available_adapters = instance.enumerate_adapters(wgpu::Backends::all());
 
         let adapter = {
@@ -107,7 +107,7 @@ impl RenderState {
                 })
                 .await
                 .ok_or_else(|| {
-                    #[cfg(not(target_arch = "wasm32"))]
+                    #[cfg(not(target_family = "wasm"))]
                     if available_adapters.is_empty() {
                         log::info!("No wgpu adapters found");
                     } else if available_adapters.len() == 1 {
@@ -127,13 +127,13 @@ impl RenderState {
                 })?
         };
 
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(target_family = "wasm")]
         log::debug!(
             "Picked wgpu adapter: {}",
             adapter_info_summary(&adapter.get_info())
         );
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         if available_adapters.len() == 1 {
             log::debug!(
                 "Picked the only available wgpu adapter: {}",
@@ -168,7 +168,7 @@ impl RenderState {
 
         Ok(Self {
             adapter: Arc::new(adapter),
-            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(not(target_family = "wasm"))]
             available_adapters: available_adapters.into(),
             device: Arc::new(device),
             queue: Arc::new(queue),
@@ -178,7 +178,7 @@ impl RenderState {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 fn describe_adapters(adapters: &[wgpu::Adapter]) -> String {
     if adapters.is_empty() {
         "(none)".to_owned()
@@ -400,7 +400,7 @@ mod profiling_scopes {
     macro_rules! profile_function {
         ($($arg: tt)*) => {
             #[cfg(feature = "puffin")]
-            #[cfg(not(target_arch = "wasm32"))] // Disabled on web because of the coarse 1ms clock resolution there.
+            #[cfg(not(target_family = "wasm"))] // Disabled on web because of the coarse 1ms clock resolution there.
             puffin::profile_function!($($arg)*);
         };
     }
@@ -410,7 +410,7 @@ mod profiling_scopes {
     macro_rules! profile_scope {
         ($($arg: tt)*) => {
             #[cfg(feature = "puffin")]
-            #[cfg(not(target_arch = "wasm32"))] // Disabled on web because of the coarse 1ms clock resolution there.
+            #[cfg(not(target_family = "wasm"))] // Disabled on web because of the coarse 1ms clock resolution there.
             puffin::profile_scope!($($arg)*);
         };
     }

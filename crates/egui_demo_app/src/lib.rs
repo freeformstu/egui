@@ -17,8 +17,8 @@ pub(crate) fn seconds_since_midnight() -> f64 {
 
 // ----------------------------------------------------------------------------
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 mod web;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub use web::*;

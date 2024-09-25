@@ -121,7 +121,7 @@ mod profiling_scopes {
     macro_rules! profile_function {
         ($($arg: tt)*) => {
             #[cfg(feature = "puffin")]
-            #[cfg(not(target_arch = "wasm32"))] // Disabled on web because of the coarse 1ms clock resolution there.
+            #[cfg(not(target_family = "wasm"))] // Disabled on web because of the coarse 1ms clock resolution there.
             puffin::profile_function!($($arg)*);
         };
     }
@@ -131,7 +131,7 @@ mod profiling_scopes {
     macro_rules! profile_scope {
         ($($arg: tt)*) => {
             #[cfg(feature = "puffin")]
-            #[cfg(not(target_arch = "wasm32"))] // Disabled on web because of the coarse 1ms clock resolution there.
+            #[cfg(not(target_family = "wasm"))] // Disabled on web because of the coarse 1ms clock resolution there.
             puffin::profile_scope!($($arg)*);
         };
     }

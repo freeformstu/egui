@@ -99,7 +99,7 @@ impl BackendPanel {
             ui.label("Press down all modifiers and hover a widget to see a callstack for it");
         }
 
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(target_family = "wasm")]
         {
             ui.separator();
             let mut screen_reader = ui.ctx().options(|o| o.screen_reader);
@@ -107,7 +107,7 @@ impl BackendPanel {
             ui.ctx().options_mut(|o| o.screen_reader = screen_reader);
         }
 
-        if cfg!(debug_assertions) && cfg!(target_arch = "wasm32") {
+        if cfg!(debug_assertions) && cfg!(target_family = "wasm") {
             ui.separator();
             // For testing panic handling on web:
             #[allow(clippy::manual_assert)]
@@ -116,7 +116,7 @@ impl BackendPanel {
             }
         }
 
-        if !cfg!(target_arch = "wasm32") {
+        if !cfg!(target_family = "wasm") {
             ui.separator();
             if ui.button("Quit").clicked() {
                 ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
@@ -178,7 +178,7 @@ fn integration_ui(ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         ui.label(".");
     });
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(target_family = "wasm")]
     ui.collapsing("Web info (location)", |ui| {
         ui.style_mut().wrap_mode = Some(egui::TextWrapMode::Extend);
         ui.monospace(format!("{:#?}", _frame.info().web_info.location));
@@ -266,7 +266,7 @@ fn integration_ui(ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
             wgpu_adapter_ui(ui, &render_state.adapter);
             ui.end_row();
 
-            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(not(target_family = "wasm"))]
             if 1 < render_state.available_adapters.len() {
                 ui.label("Others:");
                 ui.vertical(|ui| {
@@ -281,7 +281,7 @@ fn integration_ui(ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         });
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     {
         ui.horizontal(|ui| {
             {
@@ -440,7 +440,7 @@ impl EguiWindows {
 
 // ----------------------------------------------------------------------------
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 fn call_after_delay(delay: std::time::Duration, f: impl FnOnce() + Send + 'static) {
     std::thread::Builder::new()
         .name("call_after_delay".to_owned())
@@ -451,7 +451,7 @@ fn call_after_delay(delay: std::time::Duration, f: impl FnOnce() + Send + 'stati
         .unwrap();
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 fn call_after_delay(delay: std::time::Duration, f: impl FnOnce() + Send + 'static) {
     use wasm_bindgen::prelude::*;
     let window = web_sys::window().unwrap();

@@ -6,22 +6,22 @@
 
 #![warn(missing_docs)] // Let's keep `epi` well-documented.
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 use std::any::Any;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 pub use crate::native::winit_integration::UserEvent;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 use raw_window_handle::{
     DisplayHandle, HandleError, HasDisplayHandle, HasWindowHandle, RawDisplayHandle,
     RawWindowHandle, WindowHandle,
 };
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 use static_assertions::assert_not_impl_any;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 pub use winit::{event_loop::EventLoopBuilder, window::WindowBuilder};
 
@@ -29,7 +29,7 @@ pub use winit::{event_loop::EventLoopBuilder, window::WindowBuilder};
 ///
 /// You can configure any platform specific details required on top of the default configuration
 /// done by `EFrame`.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 pub type EventLoopBuilderHook = Box<dyn FnOnce(&mut EventLoopBuilder<UserEvent>)>;
 
@@ -37,7 +37,7 @@ pub type EventLoopBuilderHook = Box<dyn FnOnce(&mut EventLoopBuilder<UserEvent>)
 ///
 /// You can configure any platform specific details required on top of the default configuration
 /// done by `eframe`.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 pub type WindowBuilderHook = Box<dyn FnOnce(egui::ViewportBuilder) -> egui::ViewportBuilder>;
 
@@ -82,16 +82,16 @@ pub struct CreationContext<'s> {
     pub wgpu_render_state: Option<egui_wgpu::RenderState>,
 
     /// Raw platform window handle
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     pub(crate) raw_window_handle: Result<RawWindowHandle, HandleError>,
 
     /// Raw platform display handle for window
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     pub(crate) raw_display_handle: Result<RawDisplayHandle, HandleError>,
 }
 
 #[allow(unsafe_code)]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl HasWindowHandle for CreationContext<'_> {
     fn window_handle(&self) -> Result<WindowHandle<'_>, HandleError> {
         // Safety: the lifetime is correct.
@@ -100,7 +100,7 @@ impl HasWindowHandle for CreationContext<'_> {
 }
 
 #[allow(unsafe_code)]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl HasDisplayHandle for CreationContext<'_> {
     fn display_handle(&self) -> Result<DisplayHandle<'_>, HandleError> {
         // Safety: the lifetime is correct.
@@ -135,12 +135,12 @@ pub trait App {
     ///
     /// Just copy-paste this as your implementation:
     /// ```ignore
-    /// #[cfg(target_arch = "wasm32")]
+    /// #[cfg(target_family = "wasm")]
     /// fn as_any_mut(&mut self) -> Option<&mut dyn std::any::Any> {
     ///     Some(&mut *self)
     /// }
     /// ```
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(target_family = "wasm")]
     fn as_any_mut(&mut self) -> Option<&mut dyn Any> {
         None
     }
@@ -224,7 +224,7 @@ pub trait App {
 }
 
 /// Selects the level of hardware graphics acceleration.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum HardwareAcceleration {
     /// Require graphics acceleration.
@@ -252,7 +252,7 @@ pub enum HardwareAcceleration {
 ///
 /// If you don't set an app id, the title argument to [`crate::run_native`]
 /// will be used as app id instead.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 pub struct NativeOptions {
     /// Controls the native window of the root viewport.
     ///
@@ -371,7 +371,7 @@ pub struct NativeOptions {
     pub persistence_path: Option<std::path::PathBuf>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl Clone for NativeOptions {
     fn clone(&self) -> Self {
         Self {
@@ -393,7 +393,7 @@ impl Clone for NativeOptions {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl Default for NativeOptions {
     fn default() -> Self {
         Self {
@@ -436,7 +436,7 @@ impl Default for NativeOptions {
 // ----------------------------------------------------------------------------
 
 /// Options when using `eframe` in a web page.
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub struct WebOptions {
     /// Try to detect and follow the system preferred setting for dark vs light mode.
     ///
@@ -468,7 +468,7 @@ pub struct WebOptions {
     pub wgpu_options: egui_wgpu::WgpuConfiguration,
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 impl Default for WebOptions {
     fn default() -> Self {
         Self {
@@ -619,7 +619,7 @@ pub struct Frame {
     pub(crate) gl: Option<std::sync::Arc<glow::Context>>,
 
     /// Used to convert user custom [`glow::Texture`] to [`egui::TextureId`]
-    #[cfg(all(feature = "glow", not(target_arch = "wasm32")))]
+    #[cfg(all(feature = "glow", not(target_family = "wasm")))]
     pub(crate) glow_register_native_texture:
         Option<Box<dyn FnMut(glow::Texture) -> egui::TextureId>>,
 
@@ -628,20 +628,20 @@ pub struct Frame {
     pub(crate) wgpu_render_state: Option<egui_wgpu::RenderState>,
 
     /// Raw platform window handle
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     pub(crate) raw_window_handle: Result<RawWindowHandle, HandleError>,
 
     /// Raw platform display handle for window
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     pub(crate) raw_display_handle: Result<RawDisplayHandle, HandleError>,
 }
 
 // Implementing `Clone` would violate the guarantees of `HasWindowHandle` and `HasDisplayHandle`.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 assert_not_impl_any!(Frame: Clone);
 
 #[allow(unsafe_code)]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl HasWindowHandle for Frame {
     fn window_handle(&self) -> Result<WindowHandle<'_>, HandleError> {
         // Safety: the lifetime is correct.
@@ -650,7 +650,7 @@ impl HasWindowHandle for Frame {
 }
 
 #[allow(unsafe_code)]
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl HasDisplayHandle for Frame {
     fn display_handle(&self) -> Result<DisplayHandle<'_>, HandleError> {
         // Safety: the lifetime is correct.
@@ -661,10 +661,10 @@ impl HasDisplayHandle for Frame {
 impl Frame {
     /// True if you are in a web environment.
     ///
-    /// Equivalent to `cfg!(target_arch = "wasm32")`
+    /// Equivalent to `cfg!(target_family = "wasm")`
     #[allow(clippy::unused_self)]
     pub fn is_web(&self) -> bool {
-        cfg!(target_arch = "wasm32")
+        cfg!(target_family = "wasm")
     }
 
     /// Information about the integration.
@@ -703,7 +703,7 @@ impl Frame {
     /// and then you can use the returned [`egui::TextureId`] to render your texture with [`egui`].
     ///
     /// This function will take the ownership of your [`glow::Texture`], so please do not delete your [`glow::Texture`] after registering.
-    #[cfg(all(feature = "glow", not(target_arch = "wasm32")))]
+    #[cfg(all(feature = "glow", not(target_family = "wasm")))]
     pub fn register_native_glow_texture(&mut self, native: glow::Texture) -> egui::TextureId {
         self.glow_register_native_texture.as_mut().unwrap()(native)
     }
@@ -721,7 +721,7 @@ impl Frame {
 
 /// Information about the web environment (if applicable).
 #[derive(Clone, Debug)]
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub struct WebInfo {
     /// The browser user agent.
     pub user_agent: String,
@@ -733,7 +733,7 @@ pub struct WebInfo {
 /// Information about the URL.
 ///
 /// Everything has been percent decoded (`%20` -> ` ` etc).
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 #[derive(Clone, Debug)]
 pub struct Location {
     /// The full URL (`location.href`) without the hash, percent-decoded.
@@ -789,7 +789,7 @@ pub struct Location {
 #[derive(Clone, Debug)]
 pub struct IntegrationInfo {
     /// Information about the surrounding web environment.
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(target_family = "wasm")]
     pub web_info: WebInfo,
 
     /// Does the OS use dark or light mode?

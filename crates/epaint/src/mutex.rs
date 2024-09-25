@@ -406,7 +406,7 @@ mod tests {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(feature = "deadlock_detection")]
 #[cfg(test)]
 mod tests_rwlock {

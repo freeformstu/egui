@@ -97,7 +97,7 @@ rayon = { version = "1.7", optional = true }
 serde = { workspace = true, optional = true, features = ["derive", "rc"] }
 
 # native:
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
 backtrace = { workspace = true, optional = true }
 
 

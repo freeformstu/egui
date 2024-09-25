@@ -60,7 +60,7 @@ impl eframe::App for ImageViewer {
                     self.current_uri = self.uri_edit_text.clone();
                 };
 
-                #[cfg(not(target_arch = "wasm32"))]
+                #[cfg(not(target_family = "wasm"))]
                 if ui.button("file…").clicked() {
                     if let Some(path) = rfd::FileDialog::new().pick_file() {
                         self.uri_edit_text = format!("file://{}", path.display());

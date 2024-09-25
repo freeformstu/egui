@@ -43,7 +43,7 @@ impl FrameHistory {
         );
         egui::warn_if_debug_build(ui);
 
-        if !cfg!(target_arch = "wasm32") {
+        if !cfg!(target_family = "wasm") {
             egui::CollapsingHeader::new("📊 CPU usage history")
                 .default_open(false)
                 .show(ui, |ui| {

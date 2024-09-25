@@ -56,7 +56,7 @@
 ///
 /// See [`egui::load`] for more information about how loaders work.
 pub fn install_image_loaders(ctx: &egui::Context) {
-    #[cfg(all(not(target_arch = "wasm32"), feature = "file"))]
+    #[cfg(all(not(target_family = "wasm"), feature = "file"))]
     if !ctx.is_loader_installed(self::file_loader::FileLoader::ID) {
         ctx.add_bytes_loader(std::sync::Arc::new(self::file_loader::FileLoader::default()));
         log::trace!("installed FileLoader");
@@ -91,7 +91,7 @@ pub fn install_image_loaders(ctx: &egui::Context) {
     }
 
     #[cfg(all(
-        any(target_arch = "wasm32", not(feature = "file")),
+        any(target_family = "wasm", not(feature = "file")),
         not(feature = "http"),
         not(feature = "image"),
         not(feature = "svg")
@@ -101,7 +101,7 @@ pub fn install_image_loaders(ctx: &egui::Context) {
     let _ = ctx;
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 mod file_loader;
 
 #[cfg(feature = "http")]

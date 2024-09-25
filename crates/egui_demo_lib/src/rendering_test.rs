@@ -401,7 +401,7 @@ pub fn pixel_test(ui: &mut Ui) {
     ui.label("If anything is blurry, then everything will be blurry, including text.");
     ui.label("You might need a magnifying glass to check this test.");
 
-    if cfg!(target_arch = "wasm32") {
+    if cfg!(target_family = "wasm") {
         ui.label("Make sure these test pass even when you zoom in/out and resize the browser.");
     }
 

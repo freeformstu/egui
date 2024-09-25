@@ -152,7 +152,7 @@ impl Painter {
             );
         }
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         if gl.version().major < 2 {
             // this checks on desktop that we are not using opengl 1.1 microsoft sw rendering context.
             // ShaderVersion::get fn will segfault due to SHADING_LANGUAGE_VERSION (added in gl2.0)
@@ -174,7 +174,7 @@ impl Painter {
             });
         log::debug!("SRGB texture Support: {:?}", srgb_textures);
 
-        let supports_srgb_framebuffer = !cfg!(target_arch = "wasm32")
+        let supports_srgb_framebuffer = !cfg!(target_family = "wasm")
             && supported_extensions.iter().any(|extension| {
                 // {GL,GLX,WGL}_ARB_framebuffer_sRGB, …
                 extension.ends_with("ARB_framebuffer_sRGB")

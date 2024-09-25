@@ -1082,7 +1082,7 @@ impl Default for DebugOptions {
         Self {
             debug_on_hover: false,
             debug_on_hover_with_all_modifiers: cfg!(feature = "callstack")
-                && !cfg!(target_arch = "wasm32"),
+                && !cfg!(target_family = "wasm"),
             hover_shows_next: false,
             show_expand_width: false,
             show_expand_height: false,

@@ -253,7 +253,7 @@ pub struct Options {
 impl Default for Options {
     fn default() -> Self {
         // TODO(emilk): figure out why these constants need to be different on web and on native (winit).
-        let is_web = cfg!(target_arch = "wasm32");
+        let is_web = cfg!(target_family = "wasm");
         let line_scroll_speed = if is_web {
             8.0
         } else {

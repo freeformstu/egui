@@ -57,18 +57,18 @@
 //!
 //! ## Usage, web:
 //! ``` no_run
-//! # #[cfg(target_arch = "wasm32")]
+//! # #[cfg(target_family = "wasm")]
 //! use wasm_bindgen::prelude::*;
 //!
 //! /// Your handle to the web app from JavaScript.
-//! # #[cfg(target_arch = "wasm32")]
+//! # #[cfg(target_family = "wasm")]
 //! #[derive(Clone)]
 //! #[wasm_bindgen]
 //! pub struct WebHandle {
 //!     runner: eframe::WebRunner,
 //! }
 //!
-//! # #[cfg(target_arch = "wasm32")]
+//! # #[cfg(target_family = "wasm")]
 //! #[wasm_bindgen]
 //! impl WebHandle {
 //!     /// Installs a panic hook, then returns.
@@ -155,31 +155,31 @@ pub(crate) mod stopwatch;
 // ----------------------------------------------------------------------------
 // When compiling for web
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub use wasm_bindgen;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub use web_sys;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub mod web;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 pub use web::{WebLogger, WebRunner};
 
 // ----------------------------------------------------------------------------
 // When compiling natively
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 mod native;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 #[cfg(feature = "persistence")]
 pub use native::file_storage::storage_dir;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 pub mod icon_data;
 
 /// This is how you start a native (desktop) app.
@@ -226,7 +226,7 @@ pub mod icon_data;
 ///
 /// # Errors
 /// This function can fail if we fail to set up a graphics context.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 #[allow(clippy::needless_pass_by_value)]
 pub fn run_native(
@@ -304,7 +304,7 @@ pub fn run_native(
 ///
 /// # Errors
 /// This function can fail if we fail to set up a graphics context.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 #[cfg(any(feature = "glow", feature = "wgpu"))]
 pub fn run_simple_native(
     app_name: &str,
@@ -337,19 +337,19 @@ pub enum Error {
     AppCreation(Box<dyn std::error::Error + Send + Sync>),
 
     /// An error from [`winit`].
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     Winit(winit::error::OsError),
 
     /// An error from [`winit::event_loop::EventLoop`].
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(target_family = "wasm"))]
     WinitEventLoop(winit::error::EventLoopError),
 
     /// An error from [`glutin`] when using [`glow`].
-    #[cfg(all(feature = "glow", not(target_arch = "wasm32")))]
+    #[cfg(all(feature = "glow", not(target_family = "wasm")))]
     Glutin(glutin::error::Error),
 
     /// An error from [`glutin`] when using [`glow`].
-    #[cfg(all(feature = "glow", not(target_arch = "wasm32")))]
+    #[cfg(all(feature = "glow", not(target_family = "wasm")))]
     NoGlutinConfigs(glutin::config::ConfigTemplate, Box<dyn std::error::Error>),
 
     /// An error from [`glutin`] when using [`glow`].
@@ -363,7 +363,7 @@ pub enum Error {
 
 impl std::error::Error for Error {}
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl From<winit::error::OsError> for Error {
     #[inline]
     fn from(err: winit::error::OsError) -> Self {
@@ -371,7 +371,7 @@ impl From<winit::error::OsError> for Error {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_family = "wasm"))]
 impl From<winit::error::EventLoopError> for Error {
     #[inline]
     fn from(err: winit::error::EventLoopError) -> Self {
@@ -379,7 +379,7 @@ impl From<winit::error::EventLoopError> for Error {
     }
 }
 
-#[cfg(all(feature = "glow", not(target_arch = "wasm32")))]
+#[cfg(all(feature = "glow", not(target_family = "wasm")))]
 impl From<glutin::error::Error> for Error {
     #[inline]
     fn from(err: glutin::error::Error) -> Self {
@@ -408,22 +408,22 @@ impl std::fmt::Display for Error {
         match self {
             Self::AppCreation(err) => write!(f, "app creation error: {err}"),
 
-            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(not(target_family = "wasm"))]
             Self::Winit(err) => {
                 write!(f, "winit error: {err}")
             }
 
-            #[cfg(not(target_arch = "wasm32"))]
+            #[cfg(not(target_family = "wasm"))]
             Self::WinitEventLoop(err) => {
                 write!(f, "winit EventLoopError: {err}")
             }
 
-            #[cfg(all(feature = "glow", not(target_arch = "wasm32")))]
+            #[cfg(all(feature = "glow", not(target_family = "wasm")))]
             Self::Glutin(err) => {
                 write!(f, "glutin error: {err}")
             }
 
-            #[cfg(all(feature = "glow", not(target_arch = "wasm32")))]
+            #[cfg(all(feature = "glow", not(target_family = "wasm")))]
             Self::NoGlutinConfigs(template, err) => {
                 write!(
                     f,
@@ -457,7 +457,7 @@ mod profiling_scopes {
     macro_rules! profile_function {
         ($($arg: tt)*) => {
             #[cfg(feature = "puffin")]
-            #[cfg(not(target_arch = "wasm32"))] // Disabled on web because of the coarse 1ms clock resolution there.
+            #[cfg(not(target_family = "wasm"))] // Disabled on web because of the coarse 1ms clock resolution there.
             puffin::profile_function!($($arg)*);
         };
     }
@@ -467,7 +467,7 @@ mod profiling_scopes {
     macro_rules! profile_scope {
         ($($arg: tt)*) => {
             #[cfg(feature = "puffin")]
-            #[cfg(not(target_arch = "wasm32"))] // Disabled on web because of the coarse 1ms clock resolution there.
+            #[cfg(not(target_family = "wasm"))] // Disabled on web because of the coarse 1ms clock resolution there.
             puffin::profile_scope!($($arg)*);
         };
     }
